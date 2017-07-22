@@ -1,6 +1,10 @@
 #pragma once
 
-# include <fwd.hh>
+# include <opencv2/core.hpp>
+# include <opencv2/imgcodecs.hpp>
+# include <opencv2/imgproc.hpp>
+
+# include <octree.hh>
 
 namespace allrgb
 {
@@ -15,5 +19,6 @@ namespace allrgb
 
   private:
     cv::Mat& img_;
+    Octree colors_;
   };
 }

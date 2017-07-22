@@ -2,6 +2,7 @@
 
 allrgb::Transformer::Transformer(cv::Mat& input)
   : img_(input)
+  , colors_(9)
 {}
 
 cv::Mat&

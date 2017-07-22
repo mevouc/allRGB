@@ -13,6 +13,7 @@ include_directories(src/
                     ${OpenCV_INCLUDE_DIRS})
 
 set(SRC src/allrgb.cc
+        src/octree.cc
         src/transformer.cc)
 
 add_executable(allrgb ${SRC})
