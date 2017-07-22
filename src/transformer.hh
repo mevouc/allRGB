@@ -18,6 +18,9 @@ namespace allrgb
     void operator()();
 
   private:
+    void replace_color(cv::Vec3b& color);
+
+  private:
     cv::Mat& img_;
     Octree colors_;
   };

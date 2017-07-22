@@ -13,4 +13,14 @@ allrgb::Transformer::img_get() const
 
 void
 allrgb::Transformer::operator()()
-{}
+{
+  for (auto it = img_.begin<cv::Vec3b>(); it != img_.end<cv::Vec3b>(); ++it)
+    replace_color(*it);
+}
+
+void
+allrgb::Transformer::replace_color(cv::Vec3b& color)
+{
+  color = color;
+}
+
