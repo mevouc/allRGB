@@ -7,14 +7,14 @@ namespace allrgb
   class Octree
   {
   public:
-    Octree(unsigned depth);
+    Octree(size_t depth);
 
   private:
     void init_();
-    void init_(unsigned long index, unsigned long sub_leaves);
+    void init_(size_t index, size_t sub_leaves);
 
   private:
-    std::vector<unsigned> data_;
-    unsigned long nb_leaves_;
+    std::vector<size_t> data_;
+    size_t nb_leaves_;
   };
 }
