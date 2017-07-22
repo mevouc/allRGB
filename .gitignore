@@ -33,3 +33,6 @@
 
 # Binay
 allrgb
+
+# CMake
+build/
