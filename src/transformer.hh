@@ -19,6 +19,7 @@ namespace allrgb
 
   private:
     void replace_color(cv::Vec3b& color);
+    static uchar bdigit(uchar value, size_t bit_index);
 
   private:
     cv::Mat& img_;

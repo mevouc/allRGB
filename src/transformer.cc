@@ -24,3 +24,11 @@ allrgb::Transformer::replace_color(cv::Vec3b& color)
   color = color;
 }
 
+// bit_index = 0 is the LSB
+uchar
+allrgb::Transformer::bdigit(uchar value, size_t bit_index)
+{
+  unsigned mask = 0b00000001 << bit_index;
+  return (value & mask) >> bit_index;
+}
+
