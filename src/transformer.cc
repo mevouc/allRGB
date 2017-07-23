@@ -26,10 +26,9 @@ allrgb::Transformer::operator()()
     for (size_t x = 0; x < 4096; ++x)
       points.emplace_back(x, y);
   std::random_device rd;
-  // TODO more effective
-  std::shuffle(points.begin(), points.end(), rd);
+  std::shuffle(points.begin(), points.end(), std::mt19937(rd()));
 
-  while (points.size() > 0)
+  while (!points.empty())
   {
     cv::Point& point = *points.end();
     replace_color_(img_.at<cv::Vec3b>(point));
