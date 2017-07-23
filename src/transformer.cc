@@ -46,9 +46,9 @@ allrgb::Transformer::replace_color_(cv::Vec3b& color)
     // TODO decrement sub_leaves amount
   }
 
-  color[2] = new_blue;
+  color[0] = new_blue;
   color[1] = new_green;
-  color[0] = new_red;
+  color[2] = new_red;
 }
 
 // bit_index = 0 is the LSB
