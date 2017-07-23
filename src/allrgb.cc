@@ -103,6 +103,7 @@ allrgb::check(const cv::Mat& img)
     return false;
   }
 
+  bool res = true;
   std::unordered_set<size_t> colors(4096 * 4096);
   for (int y = 0; y < img.rows; ++y)
     for (int x = 0; x < img.cols; ++x)
@@ -115,9 +116,9 @@ allrgb::check(const cv::Mat& img)
         std::cerr << "color rgb(" << (int)pix[2] << ", " << (int)pix[1] << ", "
                   << (int)pix[0] << "), pos (" << x << ", " << y
                   << "), is already present in picture." << std::endl;
-        return false;
+        res = false;
       }
     }
 
-  return true;
+  return res;
 }
