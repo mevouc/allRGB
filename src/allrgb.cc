@@ -1,5 +1,6 @@
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <unordered_set>
 
 #include <allrgb.hh>
 #include <transformer.hh>
@@ -79,12 +80,44 @@ allrgb::run(const std::string& input, const std::string& output)
 bool
 allrgb::check(const std::string& input)
 {
-  bool res = true;// TODO
+  cv::Mat img = cv::imread(input);
+
+  bool res = check(img);
+
   if (res)
     std::cout << "'" << input << "' does contain all RGB colors only once."
               << std::endl;
   else
-    std::cout << "'" << input << "' does contain all RGB colors only once."
+    std::cout << "'" << input << "' does not contain all RGB colors only once."
               << std::endl;
   return res;
+}
+
+bool
+allrgb::check(const cv::Mat& img)
+{
+  if (img.dims == 2 && img.rows == img.cols && img.total() != 4096 * 4096)
+  {
+    std::cerr << "image does not have " << 4096 * 4096 << " pixels."
+              << std::endl;
+    return false;
+  }
+
+  std::unordered_set<size_t> colors(4096 * 4096);
+  for (int y = 0; y < img.rows; ++y)
+    for (int x = 0; x < img.cols; ++x)
+    {
+      cv::Vec3b pix = img.at<cv::Vec3b>(cv::Point(x, y));
+      size_t color = pix[0] + (pix[1] << 8) + (pix[2] << 16);
+
+      if (!colors.insert(color).second)
+      {
+        std::cerr << "color rgb(" << (int)pix[2] << ", " << (int)pix[1] << ", "
+                  << (int)pix[0] << "), pos (" << x << ", " << y
+                  << "), is already present in picture." << std::endl;
+        return false;
+      }
+    }
+
+  return true;
 }
