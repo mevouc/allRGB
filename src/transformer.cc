@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <random>
+#include <vector>
+
+#include <point_hash.hh>
 #include <transformer.hh>
 
 allrgb::Transformer::Transformer(cv::Mat& input)
@@ -14,8 +19,20 @@ allrgb::Transformer::img_get() const
 void
 allrgb::Transformer::operator()()
 {
-  for (auto it = img_.begin<cv::Vec3b>(); it != img_.end<cv::Vec3b>(); ++it)
-    replace_color_(*it);
+  std::vector<cv::Point> points;
+  points.reserve(4096 * 4096);
+  for (size_t y = 0; y < 4096; ++y)
+    for (size_t x = 0; x < 4096; ++x)
+      points.emplace_back(x, y);
+  std::random_device rd;
+  std::shuffle(points.begin(), points.end(), rd);
+
+  while (points.size() > 0)
+  {
+    cv::Point& point = *points.end();
+    replace_color_(img_.at<cv::Vec3b>(point));
+    points.pop_back();
+  }
 }
 
 void
@@ -33,15 +50,17 @@ allrgb::Transformer::replace_color_(cv::Vec3b& color)
 
   for (unsigned i = 0; i < 8; ++i)
   {
-    const size_t child = ocnode_index_(red, green, blue, i);
-    octree_index = colors_.index_child(octree_index, child);
+    const size_t perfect_child = ocnode_index_(red, green, blue, i);
+    const size_t prev_octree_index = octree_index;
+    octree_index = colors_.index_child(prev_octree_index, perfect_child);
 
-    if (colors_.at(octree_index) > 0)
-      choose_child_(new_red, new_green, new_blue, child);
-    else
+    size_t last_chosen = perfect_child;
+    while (colors_.at(octree_index) <= 0)
     {
-      // TODO lookup for another color
+      last_chosen = next_lookup_(perfect_child, last_chosen);
+      octree_index = colors_.index_child(prev_octree_index, last_chosen);
     }
+    choose_child_(new_red, new_green, new_blue, last_chosen);
   }
 
   colors_.delete_leaf(octree_index);
@@ -96,7 +115,8 @@ allrgb::Transformer::next_lookup_(const size_t perfect, const size_t last)
 {
   assert(perfect < 8 && last < 8);
 
-  if (last == 7)
+  if (last >= 7)
     return 0;
   return last + 1;
+  // TODO lookup heuristic
 }
