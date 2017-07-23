@@ -13,7 +13,9 @@ int main(int argc, char* argv[])
   desc.add_options()
     ("help,h", "Display this message")
     ("input,i", po::value<std::string>(), "Input image")
-    ("output,o", po::value<std::string>(), "Output image");
+    ("output,o", po::value<std::string>(), "Output image")
+    ("check,c", po::value<std::string>(), "Image to check (does not work with"
+    " other options)");
 
   po::variables_map vm;
   try
@@ -38,6 +40,8 @@ int main(int argc, char* argv[])
   }
   else if (vm.count("input"))
     input = vm["input"].as<std::string>();
+  else if (vm.count("check"))
+    return allrgb::check(vm["check"].as<std::string>()) ? 0 : 1;
   else
   {
     std::cout << "option '--input' has to be specified" << std::endl
@@ -68,4 +72,16 @@ int allrgb::run(const std::string& input, const std::string& output)
   cv::imwrite(output, tsfm.img_get());
 
   return 0;
+}
+
+bool allrgb::check(const std::string& input)
+{
+  bool res = true;// TODO
+  if (res)
+    std::cout << "'" << input << "' does contain all RGB colors only once."
+              << std::endl;
+  else
+    std::cout << "'" << input << "' does contain all RGB colors only once."
+              << std::endl;
+  return res;
 }
