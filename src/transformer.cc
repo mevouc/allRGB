@@ -28,14 +28,20 @@ allrgb::Transformer::replace_color(cv::Vec3b& color)
 uchar
 allrgb::Transformer::bdigit(const uchar value, const size_t bit_index)
 {
-  unsigned mask = 0b00000001 << bit_index;
+  assert(bit_index < 8);
+
+  const unsigned mask = 0b00000001 << bit_index;
   return (value & mask) >> bit_index;
 }
 
 size_t
 allrgb::Transformer::ocnode_index(const uchar r, const uchar g, const uchar b,
-                                  const size_t bindex)
+                                  const size_t ocnode_depth)
 {
+  assert(ocnode_depth < 8);
+
+  const size_t bindex = 7 - ocnode_depth;
+
   size_t res = 0;
   res = bdigit(r, bindex);
   res = (res << 1) | bdigit(g, bindex);

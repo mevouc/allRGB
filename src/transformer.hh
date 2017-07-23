@@ -22,7 +22,7 @@ namespace allrgb
 
     static uchar bdigit(const uchar value, const size_t bit_index);
     static size_t ocnode_index(const uchar r, const uchar g, const uchar b,
-                               const size_t bindex);
+                               const size_t ocnode_depth);
 
   private:
     cv::Mat& img_;
