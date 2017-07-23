@@ -18,11 +18,13 @@ namespace allrgb
     void operator()();
 
   private:
-    void replace_color(cv::Vec3b& color);
+    void replace_color_(cv::Vec3b& color);
 
-    static uchar bdigit(const uchar value, const size_t bit_index);
-    static size_t ocnode_index(const uchar r, const uchar g, const uchar b,
-                               const size_t ocnode_depth);
+    static uchar bdigit_(const uchar value, const size_t bit_index);
+    static size_t ocnode_index_(const uchar r, const uchar g, const uchar b,
+                                const size_t ocnode_depth);
+    static void choose_child_(uchar& r, uchar& g, uchar& b,
+                              const size_t nb_child);
 
   private:
     cv::Mat& img_;
