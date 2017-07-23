@@ -6,7 +6,8 @@
 
 namespace po = boost::program_options;
 
-int main(int argc, char* argv[])
+int
+main(int argc, char* argv[])
 {
   po::options_description desc("Usage");
 
@@ -55,7 +56,8 @@ int main(int argc, char* argv[])
   return allrgb::run(input, output);
 }
 
-int allrgb::run(const std::string& input, const std::string& output)
+int
+allrgb::run(const std::string& input, const std::string& output)
 {
   std::cout << "Input file is: " << input << std::endl
             << "Output file is: " << output << std::endl;
@@ -74,7 +76,8 @@ int allrgb::run(const std::string& input, const std::string& output)
   return 0;
 }
 
-bool allrgb::check(const std::string& input)
+bool
+allrgb::check(const std::string& input)
 {
   bool res = true;// TODO
   if (res)
