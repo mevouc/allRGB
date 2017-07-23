@@ -33,7 +33,7 @@ allrgb::Transformer::replace_color_(cv::Vec3b& color)
 
   for (unsigned i = 0; i < 8; ++i)
   {
-    size_t child = ocnode_index_(red, green, blue, i);
+    const size_t child = ocnode_index_(red, green, blue, i);
     octree_index = colors_.index_child(octree_index, child);
 
     if (colors_.at(octree_index) > 0)
@@ -42,9 +42,9 @@ allrgb::Transformer::replace_color_(cv::Vec3b& color)
     {
       // TODO lookup for another color
     }
-
-    // TODO decrement sub_leaves amount
   }
+
+  colors_.delete_leaf(octree_index);
 
   color[0] = new_blue;
   color[1] = new_green;
@@ -89,4 +89,14 @@ allrgb::Transformer::choose_child_(uchar& r, uchar& g, uchar& b,
   r = (r << 1) | red_digit;
   g = (g << 1) | green_digit;
   b = (b << 1) | blue_digit;
+}
+
+size_t
+allrgb::Transformer::next_lookup_(const size_t perfect, const size_t last)
+{
+  assert(perfect < 8 && last < 8);
+
+  if (last == 7)
+    return 0;
+  return last + 1;
 }

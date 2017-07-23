@@ -26,6 +26,8 @@ namespace allrgb
     static void choose_child_(uchar& r, uchar& g, uchar& b,
                               const size_t nb_child);
 
+    static size_t next_lookup_(const size_t perfect, const size_t last);
+
   private:
     cv::Mat& img_;
     Octree colors_;
