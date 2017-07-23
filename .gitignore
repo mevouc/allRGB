@@ -36,3 +36,6 @@ allrgb
 
 # CMake
 build/
+
+# Images
+img/
