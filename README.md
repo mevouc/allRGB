@@ -1,5 +1,5 @@
 # allRGB
-C++ implementation of an allRGB filter using Boost GIL.
+C++ implementation of an allRGB filter with OpenCV.
 
 # Author
 
