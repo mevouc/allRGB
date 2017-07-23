@@ -16,13 +16,20 @@ allrgb::Octree::init_()
   init_(0, nb_leaves_);
 }
 
-size_t
+const size_t&
 allrgb::Octree::at(const size_t index) const
 {
   assert(index <= data_.size());
 
   return data_.at(index);
 }
+
+const size_t&
+allrgb::Octree::operator[](const size_t index) const
+{
+  return data_[index];
+}
+
 
 size_t
 allrgb::Octree::index_child(const size_t index, const size_t nb_child)
