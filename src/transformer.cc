@@ -24,6 +24,7 @@ allrgb::Transformer::operator()()
     for (size_t x = 0; x < 4096; ++x)
       points.emplace_back(x, y);
   std::random_device rd;
+  // TODO more effective
   std::shuffle(points.begin(), points.end(), rd);
 
   while (points.size() > 0)
@@ -54,9 +55,10 @@ allrgb::Transformer::replace_color_(cv::Vec3b& color)
     octree_index = colors_.index_child(prev_octree_index, perfect_child);
 
     size_t last_chosen = perfect_child;
+    size_t nb_try = 0;
     while (colors_.at(octree_index) <= 0)
     {
-      last_chosen = next_lookup_(perfect_child, last_chosen);
+      last_chosen = next_lookup_(perfect_child, ++nb_try);
       octree_index = colors_.index_child(prev_octree_index, last_chosen);
     }
     choose_child_(new_red, new_green, new_blue, last_chosen);
@@ -110,12 +112,20 @@ allrgb::Transformer::choose_child_(uchar& r, uchar& g, uchar& b,
 }
 
 size_t
-allrgb::Transformer::next_lookup_(const size_t perfect, const size_t last)
+allrgb::Transformer::next_lookup_(const size_t perfect, const size_t nb_try)
 {
-  assert(perfect < 8 && last < 8);
+  assert(perfect < 8 && nb_try < 8);
 
-  if (last >= 7)
-    return 0;
-  return last + 1;
-  // TODO lookup heuristic
+  const static size_t lookup_table[8][8] = {
+    {0, 1, 4, 5, 2, 3, 6, 7},
+    {1, 0, 5, 4, 3, 2, 7, 6},
+    {2, 3, 6, 7, 0, 1, 4, 5},
+    {3, 2, 7, 6, 1, 0, 5, 4},
+    {4, 5, 0, 1, 6, 7, 2, 3},
+    {5, 4, 1, 0, 7, 6, 3, 2},
+    {6, 7, 2, 3, 4, 5, 0, 1},
+    {7, 6, 3, 2, 5, 4, 1, 0}
+  };
+
+  return lookup_table[perfect][nb_try];
 }
