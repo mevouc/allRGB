@@ -8,6 +8,9 @@ namespace allrgb
   {
   public:
     Octree(size_t depth);
+    size_t at(const size_t index) const;
+
+    size_t index_child(const size_t index, const size_t nb_child);
 
   private:
     void init_();
