@@ -10,12 +10,6 @@ allrgb::Octree::Octree(size_t depth)
   init_();
 }
 
-void
-allrgb::Octree::init_()
-{
-  init_(0, nb_leaves_);
-}
-
 const size_t&
 allrgb::Octree::at(const size_t index) const
 {
@@ -30,7 +24,6 @@ allrgb::Octree::operator[](const size_t index) const
   return data_[index];
 }
 
-
 size_t
 allrgb::Octree::index_child(const size_t index, const size_t nb_child)
 {
@@ -40,6 +33,43 @@ allrgb::Octree::index_child(const size_t index, const size_t nb_child)
 
   assert(new_index < data_.size());
   return new_index;
+}
+
+bool
+allrgb::Octree::delete_leaf(const size_t index)
+{
+  assert(index < data_.size() && index >= data_.size() - nb_leaves_);
+
+  for (size_t i = index; i > 0; i = (i - 1) / 8)
+  {
+    if (at_(i) <= 0)
+      return false;
+    at_(i) -= 1;
+  }
+  if (at_(0) <= 0)
+    return false;
+  at_(0) -= 1;
+  return true;
+}
+
+size_t&
+allrgb::Octree::at_(const size_t index)
+{
+  assert(index <= data_.size());
+
+  return data_.at(index);
+}
+
+size_t&
+allrgb::Octree::operator[](const size_t index)
+{
+  return data_[index];
+}
+
+void
+allrgb::Octree::init_()
+{
+  init_(0, nb_leaves_);
 }
 
 void
