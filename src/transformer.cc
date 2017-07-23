@@ -2,7 +2,6 @@
 #include <random>
 #include <vector>
 
-#include <point_hash.hh>
 #include <transformer.hh>
 
 allrgb::Transformer::Transformer(cv::Mat& input)
