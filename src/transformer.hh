@@ -11,7 +11,7 @@ namespace allrgb
   class Transformer
   {
   public:
-    Transformer(cv::Mat& input);
+    Transformer(cv::Mat& input, const bool random);
 
     cv::Mat& img_get() const;
 
@@ -31,5 +31,6 @@ namespace allrgb
   private:
     cv::Mat& img_;
     Octree colors_;
+    const bool random_;
   };
 }

@@ -17,7 +17,10 @@ main(int argc, char* argv[])
     ("input,i", po::value<std::string>(), "Input image")
     ("output,o", po::value<std::string>(), "Output image")
     ("check,c", po::value<std::string>(), "Image to check (does not work with"
-    " other options)");
+    " other options)")
+    ("linear,l", "Linear traversal of image")
+    ("random,r", "Random traversal of image (default value, optional)")
+    ;
 
   po::variables_map vm;
   try
@@ -54,11 +57,11 @@ main(int argc, char* argv[])
   if (vm.count("output"))
     output = vm["output"].as<std::string>();
 
-  return allrgb::run(input, output);
+  return allrgb::run(input, output, !vm.count("linear"));
 }
 
-int
-allrgb::run(const std::string& input, const std::string& output)
+int allrgb::run(const std::string& input, const std::string& output,
+                const bool random)
 {
   std::cout << "Input file is: " << input << std::endl
             << "Output file is: " << output << std::endl;
@@ -68,7 +71,7 @@ allrgb::run(const std::string& input, const std::string& output)
   cv::Mat square4096;
   cv::resize(input_img, square4096, cv::Size(4096, 4096)); 
 
-  Transformer tsfm(square4096);
+  Transformer tsfm(square4096, random);
 
   tsfm();
 

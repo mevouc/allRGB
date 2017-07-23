@@ -4,9 +4,10 @@
 
 #include <transformer.hh>
 
-allrgb::Transformer::Transformer(cv::Mat& input)
+allrgb::Transformer::Transformer(cv::Mat& input, const bool random)
   : img_(input)
   , colors_(9)
+  , random_(random)
 {}
 
 cv::Mat&
@@ -20,19 +21,27 @@ allrgb::Transformer::operator()()
 {
   assert(colors_.at(0) == 4096 * 4096);
 
-  std::vector<cv::Point> points;
-  points.reserve(4096 * 4096);
-  for (size_t y = 0; y < 4096; ++y)
-    for (size_t x = 0; x < 4096; ++x)
-      points.emplace_back(x, y);
-  std::random_device rd;
-  std::shuffle(points.begin(), points.end(), std::mt19937(rd()));
-
-  while (!points.empty())
+  if (random_)
   {
-    cv::Point& point = *points.end();
-    replace_color_(img_.at<cv::Vec3b>(point));
-    points.pop_back();
+    std::vector<cv::Point> points;
+    points.reserve(4096 * 4096);
+    for (size_t y = 0; y < 4096; ++y)
+      for (size_t x = 0; x < 4096; ++x)
+        points.emplace_back(x, y);
+    std::random_device rd;
+    std::shuffle(points.begin(), points.end(), std::mt19937(rd()));
+
+    while (!points.empty())
+    {
+      cv::Point& point = *points.end();
+      replace_color_(img_.at<cv::Vec3b>(point));
+      points.pop_back();
+    }
+  }
+  else
+  {
+    for (auto it = img_.begin<cv::Vec3b>(); it != img_.end<cv::Vec3b>(); ++it)
+      replace_color_(*it);
   }
 
   assert(colors_.at(0) == 0);
