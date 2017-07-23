@@ -18,6 +18,8 @@ allrgb::Transformer::img_get() const
 void
 allrgb::Transformer::operator()()
 {
+  assert(colors_.at(0) == 4096 * 4096);
+
   std::vector<cv::Point> points;
   points.reserve(4096 * 4096);
   for (size_t y = 0; y < 4096; ++y)
@@ -33,6 +35,8 @@ allrgb::Transformer::operator()()
     replace_color_(img_.at<cv::Vec3b>(point));
     points.pop_back();
   }
+
+  assert(colors_.at(0) == 0);
 }
 
 void
