@@ -1,4 +1,5 @@
 #include <boost/program_options.hpp>
+#include <cmath>
 #include <iostream>
 #include <unordered_set>
 
@@ -78,6 +79,44 @@ int allrgb::run(const std::string& input, const std::string& output,
   cv::imwrite(output, tsfm.img_get());
 
   return 0;
+}
+
+cv::Mat allrgb::scale(const cv::Mat& img)
+{
+  assert(img.dims == 2);
+  cv::Mat scaled;
+
+  std::vector<std::pair<const double, const cv::Size>> sizes;
+  sizes.reserve(25);
+
+  size_t nb_pix = 4096 * 4096;
+  for (size_t w = 1; w <= nb_pix; w *= 2)
+  {
+    size_t h = nb_pix / w;
+    sizes.emplace_back((double)w / h, cv::Size(w, h));
+  }
+
+  double scale = img.cols / img.rows;
+  auto it = get_closest_size(sizes.begin(), sizes.end(), scale);
+  const auto next = it + 1;
+
+  if (next != sizes.end()
+      && std::abs(scale - it->first) > std::abs(scale - next->first))
+    it = next;
+
+  cv::resize(img, scaled, it->second);
+  return scaled;
+}
+
+allrgb::pair_vect_it
+allrgb::get_closest_size(pair_vect_it begin, pair_vect_it end, double scale)
+{
+  if (begin >= end - 1)
+    return begin;
+  auto mid = begin + (end - begin) / 2;
+  if (scale < mid->first)
+    return get_closest_size(begin, mid, scale);
+  return get_closest_size(mid, end, scale);
 }
 
 bool
