@@ -27,16 +27,12 @@ allrgb::Transformer::operator()()
     points.reserve(4096 * 4096);
     for (size_t i = 0; i < 4096 * 4096; ++i)
       points.emplace_back(i % 4096, i / 4096);
-    assert(points.size() == 4096 * 4096);
+
     std::random_device rd;
     std::shuffle(points.begin(), points.end(), std::mt19937(rd()));
 
-    while (!points.empty())
-    {
-      cv::Point& point = *points.end();
+    for (const auto& point : points)
       replace_color_(img_.at<cv::Vec3b>(point));
-      points.pop_back();
-    }
   }
   else
   {
