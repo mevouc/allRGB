@@ -25,8 +25,9 @@ allrgb::Transformer::operator()()
   {
     std::vector<cv::Point> points;
     points.reserve(4096 * 4096);
-    for (size_t i = 0; i < 4096 * 4096; ++i)
-      points.emplace_back(i % 4096, i / 4096);
+    for (int y = 0; y < img_.rows; ++y)
+      for (int x = 0; x < img_.cols; ++x)
+        points.emplace_back(x, y);
 
     std::random_device rd;
     std::shuffle(points.begin(), points.end(), std::mt19937(rd()));
