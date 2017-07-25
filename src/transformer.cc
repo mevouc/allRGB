@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -17,12 +18,16 @@ allrgb::Transformer::img_get() const
 }
 
 void
-allrgb::Transformer::operator()()
+allrgb::Transformer::operator()(const bool verbose)
 {
   assert(colors_.at(0) == 4096 * 4096);
 
+  if (verbose)
+    std::cout << "Colors substitution: started" << std::endl;
   if (random_)
   {
+    if (verbose)
+      std::cout << "Random traversal…" << std::endl;
     std::vector<cv::Point> points;
     points.reserve(4096 * 4096);
     for (int y = 0; y < img_.rows; ++y)
@@ -37,9 +42,13 @@ allrgb::Transformer::operator()()
   }
   else
   {
+    if (verbose)
+      std::cout << "Linear traversal (odd result to be expected)…" << std::endl;
     for (auto it = img_.begin<cv::Vec3b>(); it != img_.end<cv::Vec3b>(); ++it)
       replace_color_(*it);
   }
+  if (verbose)
+    std::cout << "Colors substitution: done" << std::endl;
 
   assert(colors_.at(0) == 0);
 }

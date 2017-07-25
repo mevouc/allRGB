@@ -38,7 +38,9 @@ main(int argc, char* argv[])
   }
 
   std::string input;
-  std::string output("allrgb.jpg");
+  std::string output("allrgb.tiff");
+
+  const bool verbose = vm.count("verbose");
 
   if (vm.count("help"))
   {
@@ -48,7 +50,7 @@ main(int argc, char* argv[])
   else if (vm.count("input"))
     input = vm["input"].as<std::string>();
   else if (vm.count("check"))
-    return allrgb::check(vm["check"].as<std::string>()) ? 0 : 1;
+    return allrgb::check(vm["check"].as<std::string>(), verbose) ? 0 : 1;
   else
   {
     std::cout << "option '--input' has to be specified" << std::endl
@@ -59,7 +61,7 @@ main(int argc, char* argv[])
   if (vm.count("output"))
     output = vm["output"].as<std::string>();
 
-  return allrgb::run(input, output, !vm.count("linear"), vm.count("verbose"));
+  return allrgb::run(input, output, !vm.count("linear"), verbose);
 }
 
 int
@@ -67,26 +69,45 @@ allrgb::run(const std::string& input, const std::string& output,
             const bool random, const bool verbose)
 {
   if (verbose)
-    std::cout << "Input file is: " << input << std::endl
-              << "Output file is: " << output << std::endl;
+  {
+    std::cout << "Input file is: '" << input << "'" << std::endl
+              << "Output file is: '" << output << "'" << std::endl;
+    if ((output.size() > 4 && output.substr(output.size() - 4, 4) == ".jpg")
+        || (output.size() > 5 && output.substr(output.size() - 5, 5) == ".jpeg"))
+    {
+      std::cout << "WARNING: JPEG and other lossy compression formats should "
+                   "be avoided for output image if you want a perfect allRGB "
+                   "result."
+                << std::endl;
+    }
+  }
 
   cv::Mat img = cv::imread(input);
 
-  cv::Mat scaled = img.total() == 4096 * 4096 ? img : scale(img);
+  cv::Mat scaled = img.total() == 4096 * 4096 ? img : scale(img, verbose);
   Transformer tsfm(scaled, random);
 
-  tsfm();
+  tsfm(verbose);
 
   cv::imwrite(output, tsfm.img_get());
+  if (verbose)
+    std::cout << "Output successfully written." << std::endl;
 
   return 0;
 }
 
 cv::Mat
-allrgb::scale(const cv::Mat& img)
+allrgb::scale(const cv::Mat& img, const bool verbose)
 {
   assert(img.dims == 2);
   cv::Mat scaled;
+
+  if (verbose)
+  {
+    std::cout << "Initial image size: (" << img.cols << ", " << img.rows << ")"
+              << std::endl;
+    std::cout << "Scaling…" << std::endl;
+  }
 
   std::vector<std::pair<const double, const cv::Size>> sizes;
   sizes.reserve(25);
@@ -106,6 +127,9 @@ allrgb::scale(const cv::Mat& img)
       && std::abs(scale - it->first) > std::abs(scale - next->first))
     it = next;
 
+  if (verbose)
+    std::cout << "Output size: (" << it->second.width << ", "
+              << it->second.height << ")" << std::endl;
   cv::resize(img, scaled, it->second);
   return scaled;
 }
@@ -122,28 +146,37 @@ allrgb::get_closest_size(pair_vect_it begin, pair_vect_it end, double scale)
 }
 
 bool
-allrgb::check(const std::string& input)
+allrgb::check(const std::string& input, const bool verbose)
 {
   cv::Mat img = cv::imread(input);
+  if (verbose)
+    std::cout << "Input file is: '" << input << "'" << std::endl;
 
-  bool res = check(img);
+  bool res = check(img, verbose);
 
-  if (res)
-    std::cout << "'" << input << "' does contain all RGB colors only once."
-              << std::endl;
-  else
-    std::cout << "'" << input << "' does not contain all RGB colors only once."
-              << std::endl;
+  if (verbose)
+  {
+    if (res)
+      std::cout << "'" << input << "' does contain all RGB colors only once."
+                << std::endl;
+    else
+      std::cout << "'" << input << "' does not contain all RGB colors only once."
+                << std::endl;
+  }
   return res;
 }
 
 bool
-allrgb::check(const cv::Mat& img)
+allrgb::check(const cv::Mat& img, const bool verbose)
 {
-  if (img.dims == 2 && img.rows == img.cols && img.total() != 4096 * 4096)
+  if (verbose)
+    std::cout << "Checking: started" << std::endl;
+  if (img.dims == 2 && (img.rows != img.cols || img.total() != 4096 * 4096))
   {
-    std::cerr << "image does not have " << 4096 * 4096 << " pixels."
-              << std::endl;
+    if (verbose)
+      std::cerr << "This image does not have " << 4096 * 4096 << " pixels."
+                << std::endl << "Checking: done" << std::endl;
+    ;
     return false;
   }
 
@@ -157,12 +190,14 @@ allrgb::check(const cv::Mat& img)
 
       if (!colors.insert(color).second)
       {
-        std::cerr << "color rgb(" << (int)pix[2] << ", " << (int)pix[1] << ", "
-                  << (int)pix[0] << "), pos (" << x << ", " << y
-                  << "), is already present in picture." << std::endl;
+        std::cerr << "Color (" << (int)pix[2] << ", " << (int)pix[1] << ", "
+                  << (int)pix[0] << "), position (" << x << ", " << y
+                  << "), is already present in this picture." << std::endl;
         res = false;
       }
     }
 
+  if (verbose)
+    std::cout << "Checking: done" << std::endl;
   return res;
 }

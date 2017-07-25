@@ -15,7 +15,7 @@ namespace allrgb
 
     cv::Mat& img_get() const;
 
-    void operator()();
+    void operator()(const bool verbose);
 
   private:
     void replace_color_(cv::Vec3b& color);
