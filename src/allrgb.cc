@@ -67,12 +67,10 @@ int allrgb::run(const std::string& input, const std::string& output,
   std::cout << "Input file is: " << input << std::endl
             << "Output file is: " << output << std::endl;
 
-  cv::Mat input_img = cv::imread(input);
+  cv::Mat img = cv::imread(input);
 
-  cv::Mat square4096;
-  cv::resize(input_img, square4096, cv::Size(4096, 4096)); 
-
-  Transformer tsfm(square4096, random);
+  cv::Mat scaled = img.total() == 4096 * 4096 ? img : scale(img);
+  Transformer tsfm(scaled, random);
 
   tsfm();
 
