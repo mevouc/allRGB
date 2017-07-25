@@ -38,7 +38,7 @@ main(int argc, char* argv[])
   }
 
   std::string input;
-  std::string output("out.png");
+  std::string output("allrgb.jpg");
 
   if (vm.count("help"))
   {
@@ -64,10 +64,11 @@ main(int argc, char* argv[])
 
 int
 allrgb::run(const std::string& input, const std::string& output,
-            const bool random, const bool )
+            const bool random, const bool verbose)
 {
-  std::cout << "Input file is: " << input << std::endl
-            << "Output file is: " << output << std::endl;
+  if (verbose)
+    std::cout << "Input file is: " << input << std::endl
+              << "Output file is: " << output << std::endl;
 
   cv::Mat img = cv::imread(input);
 
