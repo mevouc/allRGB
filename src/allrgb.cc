@@ -21,6 +21,7 @@ main(int argc, char* argv[])
     " other options)")
     ("linear,l", "Linear traversal of image")
     ("random,r", "Random traversal of image (default value, optional)")
+    ("verbose,v", "Enable useful information output")
     ;
 
   po::variables_map vm;
@@ -58,11 +59,12 @@ main(int argc, char* argv[])
   if (vm.count("output"))
     output = vm["output"].as<std::string>();
 
-  return allrgb::run(input, output, !vm.count("linear"));
+  return allrgb::run(input, output, !vm.count("linear"), vm.count("verbose"));
 }
 
-int allrgb::run(const std::string& input, const std::string& output,
-                const bool random)
+int
+allrgb::run(const std::string& input, const std::string& output,
+            const bool random, const bool )
 {
   std::cout << "Input file is: " << input << std::endl
             << "Output file is: " << output << std::endl;
@@ -79,7 +81,8 @@ int allrgb::run(const std::string& input, const std::string& output,
   return 0;
 }
 
-cv::Mat allrgb::scale(const cv::Mat& img)
+cv::Mat
+allrgb::scale(const cv::Mat& img)
 {
   assert(img.dims == 2);
   cv::Mat scaled;

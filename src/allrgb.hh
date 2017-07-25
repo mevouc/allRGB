@@ -6,7 +6,7 @@
 namespace allrgb
 {
   int run(const std::string& input, const std::string& output,
-          const bool random);
+          const bool random, const bool verbose);
 
   cv::Mat scale(const cv::Mat& img);
 
