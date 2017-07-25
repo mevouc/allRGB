@@ -1,6 +1,7 @@
 #include <boost/program_options.hpp>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 #include <unordered_set>
 
 #include <allrgb.hh>
@@ -11,14 +12,19 @@ namespace po = boost::program_options;
 int
 main(int argc, char* argv[])
 {
-  po::options_description desc("Usage");
+  std::stringstream intro;
+  intro << "Transform an image to its equivalent where each RGB color is "
+           "present only once,"
+        << std::endl
+        << "or check that an image respect that predicate." << std::endl
+        << std::endl << "Usage";
+  po::options_description desc(intro.str());
 
   desc.add_options()
     ("help,h", "Display this message")
     ("input,i", po::value<std::string>(), "Input image")
-    ("output,o", po::value<std::string>(), "Output image")
-    ("check,c", po::value<std::string>(), "Image to check (does not work with"
-    " other options)")
+    ("output,o", po::value<std::string>(), "Output image (need -i option)")
+    ("check,c", po::value<std::string>(), "Image to check (ignored with -i)")
     ("linear,l", "Linear traversal of image")
     ("random,r", "Random traversal of image (default value, optional)")
     ("verbose,v", "Enable useful information output")
@@ -44,7 +50,7 @@ main(int argc, char* argv[])
 
   if (vm.count("help"))
   {
-    std::cout << desc << std::endl;
+    std::cout << desc;
     return 1;
   }
   else if (vm.count("input"))
