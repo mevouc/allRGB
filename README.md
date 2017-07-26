@@ -16,3 +16,8 @@ availaible color within an O(log(N)) complexity.
 ### Example
 
 ![Kleinmond](http://i.imgur.com/MUVv3BM.jpg)
+
+## Checker
+
+The `--checker` option allows you to not transform an image to its allRGB
+equivalent, but to check if a picture does contain all 2²⁴ pictures only once.
