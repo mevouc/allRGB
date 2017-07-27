@@ -50,7 +50,13 @@ main(int argc, char* argv[])
 
   if (vm.count("help"))
   {
-    std::cout << desc;
+    std::cout << desc << std::endl
+              << "Examples:" << std::endl
+              << "  allrgb -i example.jpg" << std::endl
+              << "  allrgb --input example.jpg -o out.png --verbose"
+              << std::endl
+              << "  allrgb -i example.tiff --linear" << std::endl
+              << "  allrgb --check example.bmp -v" << std::endl;
     return 1;
   }
   else if (vm.count("input"))
